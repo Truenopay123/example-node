@@ -21,7 +21,7 @@ jobs:
           cache-dependency-path: fast-api-dev/package-lock.json  
       - name: Install dependencies
         working-directory: fast-api-dev  
-        run: npm install
+        run: npm install --legacy-peer-deps 
       - name: Run Jest tests
         working-directory: fast-api-dev 
         run: npm test
