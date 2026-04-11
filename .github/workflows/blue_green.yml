@@ -50,7 +50,7 @@ jobs:
           touch ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
           ssh-keyscan -T 10 -H "${{ secrets.BASTION_IP }}" >> ~/.ssh/known_hosts 2>/dev/null || true
-          printf 'Host bastion\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/id_ed25519\n  StrictHostKeyChecking no\n\nHost 10.0.*.*\n  User %s\n  IdentityFile ~/.ssh/id_ed25519\n  ProxyJump bastion\n  StrictHostKeyChecking no\n' \
+          printf 'Host bastion\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/id_ed25519\n  IdentitiesOnly yes\n  StrictHostKeyChecking no\n\nHost 10.0.*.*\n  User %s\n  IdentityFile ~/.ssh/id_ed25519\n  IdentitiesOnly yes\n  ProxyJump bastion\n  StrictHostKeyChecking no\n' \
             "${{ secrets.BASTION_IP }}" \
             "${{ secrets.GCP_USER }}" \
             "${{ secrets.GCP_USER }}" > ~/.ssh/config
@@ -58,7 +58,7 @@ jobs:
 
       - name: Test conexión bastion
         run: |
-          ssh -vvv \
+          ssh \
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=no \
             -i ~/.ssh/id_ed25519 \
@@ -70,6 +70,7 @@ jobs:
         id: state
         run: |
           ACTIVE=$(ssh \
+            -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=no \
             -o ProxyJump=${{ secrets.GCP_USER }}@${{ secrets.BASTION_IP }} \
             -i ~/.ssh/id_ed25519 \
@@ -95,18 +96,20 @@ jobs:
       - name: Copiar código a docker-bryan
         run: |
           ssh \
+            -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=no \
             -o ProxyJump=${{ secrets.GCP_USER }}@${{ secrets.BASTION_IP }} \
             -i ~/.ssh/id_ed25519 \
             ${{ secrets.GCP_USER }}@${{ secrets.DOCKER_VM_IP }} \
             "mkdir -p ~/app-${{ steps.state.outputs.target }}"
           rsync -av --exclude='node_modules' --exclude='.git' \
-            -e "ssh -o StrictHostKeyChecking=no -o ProxyJump=${{ secrets.GCP_USER }}@${{ secrets.BASTION_IP }} -i ~/.ssh/id_ed25519" \
+            -e "ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -o ProxyJump=${{ secrets.GCP_USER }}@${{ secrets.BASTION_IP }} -i ~/.ssh/id_ed25519" \
             ./fast-api-dev/ ${{ secrets.GCP_USER }}@${{ secrets.DOCKER_VM_IP }}:~/app-${{ steps.state.outputs.target }}/
 
       - name: Desplegar contenedor Docker
         run: |
           ssh \
+            -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=no \
             -o ProxyJump=${{ secrets.GCP_USER }}@${{ secrets.BASTION_IP }} \
             -i ~/.ssh/id_ed25519 \
@@ -133,6 +136,7 @@ jobs:
       - name: Health check
         run: |
           ssh \
+            -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=no \
             -o ProxyJump=${{ secrets.GCP_USER }}@${{ secrets.BASTION_IP }} \
             -i ~/.ssh/id_ed25519 \
@@ -166,6 +170,7 @@ jobs:
       - name: Actualizar current_deploy.env
         run: |
           ssh \
+            -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=no \
             -o ProxyJump=${{ secrets.GCP_USER }}@${{ secrets.BASTION_IP }} \
             -i ~/.ssh/id_ed25519 \
