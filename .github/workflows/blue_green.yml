@@ -55,6 +55,13 @@ jobs:
             "${{ secrets.GCP_USER }}" \
             "${{ secrets.GCP_USER }}" > ~/.ssh/config
           chmod 600 ~/.ssh/config
+      
+      - name: Debug clave SSH
+        run: |
+          echo "=== Fingerprint de la clave que usará el runner ==="
+          ssh-keygen -lf ~/.ssh/id_ed25519
+          echo "=== Clave pública derivada ==="
+          ssh-keygen -yf ~/.ssh/id_ed25519
 
       - name: Test conexión bastion
         run: |
