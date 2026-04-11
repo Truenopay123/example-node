@@ -90,6 +90,9 @@ jobs:
           echo "Ambiente activo: ${{ steps.state.outputs.active }}"
           echo "Desplegando en: ${{ steps.state.outputs.target }}"
 
+      - name: Instalar rsync
+        run: sudo apt-get install -y rsync
+
       - name: Copiar código a docker-bryan
         run: |
           ssh \
