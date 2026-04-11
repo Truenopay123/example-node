@@ -25,10 +25,10 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Ejecutar ESLint
-        run: npm run lint
+        run: npx eslint .
 
       - name: Ejecutar Prettier
-        run: npm run format
+        run: npx prettier --write .
 
   deploy:
     name: Deploy Blue-Green
