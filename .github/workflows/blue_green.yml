@@ -9,6 +9,9 @@ jobs:
   lint-and-format:
     name: Lint & Format
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: fast-api-dev
     steps:
       - uses: actions/checkout@v4
 
@@ -16,6 +19,7 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
+          cache-dependency-path: fast-api-dev/package-lock.json
 
       - name: Instalar dependencias
         run: npm install --legacy-peer-deps
