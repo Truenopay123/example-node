@@ -47,7 +47,6 @@ jobs:
           chmod 700 ~/.ssh
           echo "${{ secrets.GCP_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keygen -y -f ~/.ssh/id_ed25519
           touch ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
           ssh-keyscan -T 10 -H "${{ secrets.BASTION_IP }}" >> ~/.ssh/known_hosts 2>/dev/null || true
@@ -133,13 +132,12 @@ jobs:
 
       - name: Health check
         run: |
-          sleep 5
           ssh \
             -o StrictHostKeyChecking=no \
             -o ProxyJump=${{ secrets.GCP_USER }}@${{ secrets.BASTION_IP }} \
             -i ~/.ssh/id_ed25519 \
             ${{ secrets.GCP_USER }}@${{ secrets.DOCKER_VM_IP }} \
-            "curl -f http://localhost:${{ steps.state.outputs.target_port }}/health"
+            "for i in \$(seq 1 20); do curl -fsS http://localhost:${{ steps.state.outputs.target_port }}/health && exit 0; echo 'Intento '\$i' fallido, esperando...'; sleep 5; done; exit 1"
 
       - name: Cambiar tráfico en Nginx
         run: |
