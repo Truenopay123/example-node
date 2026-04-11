@@ -3,9 +3,9 @@ var path = require('path')
 var cookieParser = require('cookie-parser')
 var logger = require('morgan')
 
-var indexRouter = require('../fast-api-dev/routes/index')
-var usersRouter = require('../fast-api-dev/routes/users')
-var itemsRouter = require('../fast-api-dev/routes/items')
+var indexRouter = require('./routes/index')
+var usersRouter = require('./routes/users')
+var itemsRouter = require('./routes/items')
 
 var app = express()
 
