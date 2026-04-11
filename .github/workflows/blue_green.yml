@@ -59,7 +59,9 @@ jobs:
 
       - name: Test conexión bastion
         run: |
-          ssh -o StrictHostKeyChecking=no \
+          ssh -vvv \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=no \
             -i ~/.ssh/id_ed25519 \
             -o ConnectTimeout=10 \
             ${{ secrets.GCP_USER }}@${{ secrets.BASTION_IP }} \
