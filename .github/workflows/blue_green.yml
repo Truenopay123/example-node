@@ -40,11 +40,14 @@ jobs:
 
       - name: Configurar SSH con bastion
         run: |
+          set -euo pipefail
           mkdir -p ~/.ssh
           echo "${{ secrets.GCP_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H ${{ secrets.BASTION_IP }} >> ~/.ssh/known_hosts
-          cat >> ~/.ssh/config << EOF
+
+          ssh-keyscan -H "${{ secrets.BASTION_IP }}" >> ~/.ssh/known_hosts
+
+          tee ~/.ssh/config > /dev/null <<'EOF'
           Host bastion
             HostName ${{ secrets.BASTION_IP }}
             User ${{ secrets.GCP_USER }}
@@ -57,6 +60,8 @@ jobs:
             ProxyJump bastion
             StrictHostKeyChecking no
           EOF
+
+          chmod 600 ~/.ssh/config
 
       - name: Leer estado actual
         id: state
