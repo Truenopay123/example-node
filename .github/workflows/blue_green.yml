@@ -50,7 +50,7 @@ jobs:
           touch ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
           ssh-keyscan -T 10 -H "${{ secrets.BASTION_IP }}" >> ~/.ssh/known_hosts 2>/dev/null || true
-          printf 'Host bastion\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/id_ed25519\n  IdentitiesOnly yes\n  StrictHostKeyChecking no\n\nHost 10.0.*.*\n  User %s\n  IdentityFile ~/.ssh/id_ed25519\n  IdentitiesOnly yes\n  ProxyJump bastion\n  StrictHostKeyChecking no\n' \
+          printf 'Host bastion\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/id_ed25519\n  StrictHostKeyChecking no\n\nHost 10.0.*.*\n  User %s\n  IdentityFile ~/.ssh/id_ed25519\n  IdentitiesOnly yes\n  ProxyJump bastion\n  StrictHostKeyChecking no\n' \
             "${{ secrets.BASTION_IP }}" \
             "${{ secrets.GCP_USER }}" \
             "${{ secrets.GCP_USER }}" > ~/.ssh/config
@@ -59,7 +59,6 @@ jobs:
       - name: Test conexión bastion
         run: |
           ssh \
-            -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=no \
             -i ~/.ssh/id_ed25519 \
             -o ConnectTimeout=10 \
